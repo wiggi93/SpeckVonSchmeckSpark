@@ -14,7 +14,7 @@ function readMultipleFiles(evt) {
             r.readAsText(f);
         }
     } else {
-       // alert("Failed to load files");
+     alert("Failed to load files");
     }
 }
 document.getElementById('openFile').addEventListener('change', readMultipleFiles, false);
