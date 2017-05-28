@@ -1,14 +1,28 @@
 package com.speckvonschmeck.models;
 
 public class Data {
-	Zeile[] zeilen;
+	long x, y;
 
-	public Zeile[] getZeilen() {
-		return zeilen;
+	public Data(long x, long y){
+		this.x = x;
+		this.y = y;
 	}
 
-	public void setZeilen(Zeile[] zeilen) {
-		this.zeilen = zeilen;
+	public long getX() {
+		return x;
 	}
+
+	public void setX(long x) {
+		this.x = x;
+	}
+
+	public long getY() {
+		return y;
+	}
+
+	public void setY(long y) {
+		this.y = y;
+	}
+	
 	
 }

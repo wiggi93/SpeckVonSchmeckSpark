@@ -26,14 +26,15 @@ function parserTeppich(contents){
    while(contents.indexOf("BEGIN IONS")>-1){
        var spectrum = new Spectrum();
        var meta = new Meta();
-       var data=[];
+       
+       spectrum.data = [];
         
-        contents=contents.substring(contents.indexOf("\n")+1, contents.length);
-        meta.title=contents.substring(contents.indexOf("TITLE")+6,contents.indexOf("\n",contents.indexOf("TITLE")));
-        contents=contents.substring(contents.indexOf("\n")+1, contents.length);
-        meta.pepmass=contents.substring(contents.indexOf("PEPMASS")+8,contents.indexOf("\n",contents.indexOf("PEPMASS")));
-        contents=contents.substring(contents.indexOf("\n")+1, contents.length);
-        meta.charge=contents.substring(contents.indexOf("CHARGE")+7,contents.indexOf("\n",contents.indexOf("CHARGE")));
+	    contents=contents.substring(contents.indexOf("\n")+1, contents.length);
+	    meta.title=contents.substring(contents.indexOf("TITLE")+6,contents.indexOf("\n",contents.indexOf("TITLE")));
+	    contents=contents.substring(contents.indexOf("\n")+1, contents.length);
+	    meta.pepmass=contents.substring(contents.indexOf("PEPMASS")+8,contents.indexOf("\n",contents.indexOf("PEPMASS")));
+	    contents=contents.substring(contents.indexOf("\n")+1, contents.length);
+	    meta.charge=contents.substring(contents.indexOf("CHARGE")+7,contents.indexOf("\n",contents.indexOf("CHARGE")));
         contents=contents.substring(contents.indexOf("\n")+1, contents.length);
         meta.rtInSeconds=contents.substring(contents.indexOf("RTINSECONDS")+12,contents.indexOf("\n",contents.indexOf("RTINSECONDS")));
         contents=contents.substring(contents.indexOf("\n")+1, contents.length);
@@ -43,13 +44,13 @@ function parserTeppich(contents){
         spectrum.meta=meta;
 
         while(contents.indexOf("END IONS")!=0){
-            let zeile = new Zeile();
-            zeile.x = contents.substring(0,contents.indexOf(" "));
-            zeile.y = contents.substring(contents.indexOf(" ")+1, contents.indexOf("\n"));
-            data.push(zeile);
+        	let data = new Data();
+            data.x = contents.substring(0,contents.indexOf(" "));
+            data.y = contents.substring(contents.indexOf(" ")+1, contents.indexOf("\n"));
+            spectrum.data.push(data);
             contents=contents.substring(contents.indexOf("\n")+1, contents.length);
         }
-        spectrum.data=data;
+        
         spectra.push(spectrum);
         contents=contents.substring(contents.indexOf("BEGIN IONS"), contents.length);
 

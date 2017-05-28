@@ -11,7 +11,7 @@ function Meta(){
 	this.rtInSeconds = null;
 }
 
-function Zeile(){
+function Data(){
 	this.x = null;
 	this.y = null;
 }

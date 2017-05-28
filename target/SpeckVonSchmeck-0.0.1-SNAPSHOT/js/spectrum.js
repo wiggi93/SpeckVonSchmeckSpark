@@ -5,14 +5,13 @@ function Spectrum(){
 
 function Meta(){
 	this.title = null;
-	this.spectrum = null;
 	this.scans = null;
 	this.pepmass = null;
 	this.charge = null;
 	this.rtInSeconds = null;
 }
 
-function Zeile(){
+function Data(){
 	this.x = null;
 	this.y = null;
 }

@@ -1,6 +1,14 @@
 package com.speckvonschmeck.models;
 
-public class Meta {
+import java.util.LinkedHashMap;
+
+public class Meta extends LinkedHashMap<String, String>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	String title, scans, pepmass, charge, rtInSeconds;
 
 	public String getTitle() {
