@@ -1,14 +1,6 @@
 package com.speckvonschmeck.models;
 
-import java.util.LinkedHashMap;
-
-public class Meta extends LinkedHashMap<String, String>{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	
+public class Meta{
 	String title, scans, pepmass, charge, rtInSeconds;
 
 	public String getTitle() {
@@ -50,7 +42,11 @@ public class Meta extends LinkedHashMap<String, String>{
 	public void setRtInSeconds(String rtInSeconds) {
 		this.rtInSeconds = rtInSeconds;
 	}
-	
-	
 
+	@Override
+	public String toString() {
+		return "Meta [title=" + title + ", scans=" + scans + ", pepmass=" + pepmass + ", charge=" + charge
+				+ ", rtInSeconds=" + rtInSeconds + "]";
+	}
+	
 }

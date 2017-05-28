@@ -1,28 +1,27 @@
 package com.speckvonschmeck.models;
 
 public class Data {
-	long x, y;
+	double x, y;
 
-	public Data(long x, long y){
-		this.x = x;
-		this.y = y;
-	}
-
-	public long getX() {
+	public double getX() {
 		return x;
 	}
 
-	public void setX(long x) {
+	public void setX(double x) {
 		this.x = x;
 	}
 
-	public long getY() {
+	public double getY() {
 		return y;
 	}
 
-	public void setY(long y) {
+	public void setY(double y) {
 		this.y = y;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Data [x=" + x + ", y=" + y + "]";
+	}
 	
 }
