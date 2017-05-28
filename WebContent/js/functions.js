@@ -54,8 +54,24 @@ function parserTeppich(contents){
         contents=contents.substring(contents.indexOf("BEGIN IONS"), contents.length);
 
     }
+
     console.log(spectra);
+    
+
+    var jsonspec = JSON.stringify(spectra);
+    console.log(jsonspec);
+
+    $.ajax({
+    	   type:"POST",
+    	   contentType: "application/json",
+    	   url:"http://192.168.178.64:8080/rest/spectra",
+    	   data:jsonspec,
+    	   sucess: function(msg){
+    		   alert("nice");
+    	   }
+    });
 }
+
 
 /*
     $('#openFile').fileupload({
