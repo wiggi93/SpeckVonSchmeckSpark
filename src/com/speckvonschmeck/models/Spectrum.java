@@ -2,7 +2,7 @@ package com.speckvonschmeck.models;
 
 public class Spectrum {
 	Meta meta;
-	Data data[];
+	Data data;
 	
 	
 	public Meta getMeta() {
@@ -11,10 +11,10 @@ public class Spectrum {
 	public void setMeta(Meta meta) {
 		this.meta = meta;
 	}
-	public Data[] getData() {
+	public Data getData() {
 		return data;
 	}
-	public void setData(Data[] data) {
+	public void setData(Data data) {
 		this.data = data;
 	}
 	

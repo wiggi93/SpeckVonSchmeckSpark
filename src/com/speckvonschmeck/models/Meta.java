@@ -1,7 +1,7 @@
 package com.speckvonschmeck.models;
 
 public class Meta {
-	String title, spectrum, scans, pepmass, charge, rtInSeconds;
+	String title, scans, pepmass, charge, rtInSeconds;
 
 	public String getTitle() {
 		return title;
@@ -9,14 +9,6 @@ public class Meta {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public String getSpectrum() {
-		return spectrum;
-	}
-
-	public void setSpectrum(String spectrum) {
-		this.spectrum = spectrum;
 	}
 
 	public String getScans() {

@@ -1,9 +1,9 @@
 package com.speckvonschmeck.models;
 
-public class Data {
+public class Zeile {
 	long x, y;
 
-	public Data(long x, long y){
+	public Zeile(long x, long y){
 		this.x = x;
 		this.y = y;
 	}

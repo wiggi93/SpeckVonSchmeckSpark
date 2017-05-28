@@ -24,8 +24,8 @@ function parserTeppich(contents){
     var spectra=[];
 
    while(contents.indexOf("BEGIN IONS")>-1){
-       var spectrum=_spectrum;
-       var meta=_meta;
+       var spectrum = new Spectrum();
+       var meta = new Meta();
        var data=[];
         
         contents=contents.substring(contents.indexOf("\n")+1, contents.length);
@@ -43,9 +43,9 @@ function parserTeppich(contents){
         spectrum.meta=meta;
 
         while(contents.indexOf("END IONS")!=0){
-            let zeile=[];
-            zeile.push(contents.substring(0,contents.indexOf(" ")));
-            zeile.push(contents.substring(contents.indexOf(" ")+1, contents.indexOf("\n")));
+            let zeile = new Zeile();
+            zeile.x = contents.substring(0,contents.indexOf(" "));
+            zeile.y = contents.substring(contents.indexOf(" ")+1, contents.indexOf("\n"));
             data.push(zeile);
             contents=contents.substring(contents.indexOf("\n")+1, contents.length);
         }
