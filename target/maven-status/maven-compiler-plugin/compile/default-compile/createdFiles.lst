@@ -1,0 +1,4 @@
+com\speckvonschmeck\models\Data.class
+com\speckvonschmeck\models\Meta.class
+com\speckvonschmeck\models\Spectrum.class
+com\speckvonschmeck\rest\Rest.class
