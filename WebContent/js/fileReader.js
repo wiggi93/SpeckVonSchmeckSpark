@@ -21,7 +21,7 @@ document.getElementById('openFile').addEventListener('change', readMultipleFiles
 
 
 function parserTeppich(contents){
-	var spectra = [];
+//	var spectra = [];
 	while(contents.indexOf("BEGIN IONS") >- 1){
 		var spectrum = new Spectrum();
 		var meta = new Meta();
@@ -50,12 +50,13 @@ function parserTeppich(contents){
             contents = contents.substring(contents.indexOf("\n")+1, contents.length);
         }
         
-        spectra.push(spectrum);
+        uploadJson(JSON.stringify(spectrum));
+//        spectra.push(spectrum);
         contents=contents.substring(contents.indexOf("BEGIN IONS"), contents.length);
 
     }
 
-    uploadJson(JSON.stringify(spectra));
+    
 }
 
 function uploadJson(json){
@@ -71,21 +72,4 @@ function uploadJson(json){
     });
 }
 
-
-/*
-    $('#openFile').fileupload({
-        dataType: 'json',
-        add: function (e, data) {
-            data.context = $('<button/>').text('Upload')
-                .appendTo(document.body)
-                .click(function () {
-                    data.context = $('<p/>').text('Uploading...').replaceAll($(this));
-                    data.submit();
-                });
-        },
-        done: function (e, data) {
-            data.context.text('Upload finished.');
-        }
-    });
-*/
 
