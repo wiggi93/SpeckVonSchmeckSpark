@@ -73,7 +73,7 @@ public class SpectrumJob {
 
 			@Override
 			public Boolean call(Spectrum spectrum) throws Exception {
-				return true;
+				return spectrum.getData().get(0).getX()<=500;
 			}
 
 		}).foreachRDD(new VoidFunction<JavaRDD<Spectrum>>() {
@@ -95,6 +95,7 @@ public class SpectrumJob {
 
 					@Override
 					public void call(Spectrum spectrum) throws Exception {
+						if (!rdd.isEmpty())
 						System.out.println("Spark Job received => " + spectrum);
 						
 					}
