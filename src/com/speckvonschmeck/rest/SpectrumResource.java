@@ -19,12 +19,13 @@ public class SpectrumResource {
 	public Response serverinfo(String jsonString) {
 		
 		Gson gson = new GsonBuilder().create();
-		Spectrum[] spectra = gson.fromJson(jsonString, Spectrum[].class);
+		Spectrum spectrum = gson.fromJson(jsonString, Spectrum.class);
 		
-		for(Spectrum sp : spectra){
-			System.out.println("META");
-			System.out.println(sp.getMeta());
-		} 
+//		for(Spectrum sp : spectra){
+//			System.out.println("META");
+//			System.out.println(sp.getMeta());
+//		} 
+
 		
 		return Response.ok().build();
 	}
