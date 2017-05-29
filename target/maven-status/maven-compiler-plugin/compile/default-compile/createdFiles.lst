@@ -1,4 +1,6 @@
 com\speckvonschmeck\rest\SpectrumResource.class
 com\speckvonschmeck\models\Data.class
+com\speckvonschmeck\kafka\Consumer.class
 com\speckvonschmeck\models\Meta.class
 com\speckvonschmeck\models\Spectrum.class
+com\speckvonschmeck\listener\ContextListener.class

@@ -10,7 +10,12 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   
-  
+  	<listener>  
+	    <listener-class>
+	        com.speckvonschmeck.listener.ContextListener
+	    </listener-class>
+	</listener>  
+
   <servlet>
 	<servlet-name>Jersey</servlet-name>
 	<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
