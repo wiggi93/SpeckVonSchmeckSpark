@@ -3,7 +3,7 @@ package com.speckvonschmeck.listener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.speckvonschmeck.kafka.SpectrumConsumer;
+import com.speckvonschmeck.spark.SpectrumJob;
 
 public class ContextListener implements ServletContextListener {
 
@@ -18,8 +18,8 @@ public class ContextListener implements ServletContextListener {
 		// TODO Auto-generated method stub
 		System.out.println("Server started!");
 
-
-		new Thread(new SpectrumConsumer()).start();
+		SpectrumJob.runSparkJob();
+//		new Thread(new SpectrumConsumer()).start();
 	}
 
 

@@ -6,3 +6,4 @@ com\speckvonschmeck\kafka\SpectrumConsumer.class
 com\speckvonschmeck\models\Meta.class
 com\speckvonschmeck\models\Spectrum.class
 com\speckvonschmeck\listener\ContextListener.class
+com\speckvonschmeck\spark\SpectrumJob.class

@@ -1,7 +1,5 @@
 package com.speckvonschmeck.kafka;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -12,8 +10,6 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.speckvonschmeck.models.Spectrum;
-
-import scala.util.parsing.json.JSON;
 
 public class SpectrumProducer {
 	static int i=0;
