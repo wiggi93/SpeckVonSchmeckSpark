@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.speckvonschmeck.kafka.SpectrumProducer;
 import com.speckvonschmeck.models.Spectrum;
 
 
@@ -20,7 +21,7 @@ public class SpectrumResource {
 		
 		Gson gson = new GsonBuilder().create();
 		Spectrum spectrum = gson.fromJson(jsonString, Spectrum.class);
-		
+		SpectrumProducer.sendToKafka(spectrum);
 //		for(Spectrum sp : spectra){
 //			System.out.println("META");
 //			System.out.println(sp.getMeta());

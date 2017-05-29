@@ -16,19 +16,19 @@ import com.speckvonschmeck.models.Spectrum;
 import scala.util.parsing.json.JSON;
 
 public class SpectrumProducer {
-
+	static int i=0;
 
 	public final static String KAFKA_URL = System.getenv("KAFKA_URL") != null ? 
 			System.getenv("KAFKA_URL")
-			: "192.168.99.100:9092";
+			: "192.168.178.64:9092";
 			
 	public final static String KAFKA_TOPIC = System.getenv("KAFKA_TOPIC") != null ? 
 			System.getenv("KAFKA_TOPIC")
-			: "geolocationJob";
+			: "speckvonschmeck";
 
 			
-	public void sendToKafka(Spectrum spectrum) {
-		
+	public static void sendToKafka(Spectrum spectrum) {
+		//System.out.println("anfang");
 			Gson gson= new GsonBuilder().create();
 		
 		
@@ -44,7 +44,8 @@ public class SpectrumProducer {
 					gson.toJson(spectrum));
 			
 			producer.send(record);
-
+//			i++;
+//			System.out.println(i);
 
 			producer.close();
 			
