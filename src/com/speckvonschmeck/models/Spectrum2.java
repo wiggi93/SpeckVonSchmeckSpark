@@ -1,8 +1,9 @@
 package com.speckvonschmeck.models;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Spectrum2 {
+public class Spectrum2 implements Serializable {
 	Meta meta;
 	List<Integer> x;
 	List<Integer> y;
