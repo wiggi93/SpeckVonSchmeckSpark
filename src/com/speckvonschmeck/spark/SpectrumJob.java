@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -72,8 +73,9 @@ public class SpectrumJob {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public Boolean call(Spectrum spectrum) throws Exception {
-				return spectrum.getData().get(0).getX()<=500;
+			public Boolean call(Spectrum Spectrum) throws Exception {
+				System.out.println("Spark Job received => " + Spectrum);
+				return true;
 			}
 
 		}).foreachRDD(new VoidFunction<JavaRDD<Spectrum>>() {
@@ -95,15 +97,13 @@ public class SpectrumJob {
 
 					@Override
 					public void call(Spectrum spectrum) throws Exception {
-						if (!rdd.isEmpty())
-						System.out.println("Spark Job received => " + spectrum);
+						System.out.println(spectrum.getData());
 						
 					}
 				});
 				
 			}
 		});
-
 		context.start();
 		try {
 			context.awaitTermination();
