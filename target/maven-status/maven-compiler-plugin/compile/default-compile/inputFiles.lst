@@ -1,8 +1,4 @@
-C:\Users\phili\workspace\git\SpeckVonSchmeck\src\com\speckvonschmeck\models\Data.java
-C:\Users\phili\workspace\git\SpeckVonSchmeck\src\com\speckvonschmeck\kafka\Consumer.java
-C:\Users\phili\workspace\git\SpeckVonSchmeck\src\com\speckvonschmeck\rest\SpectrumResource.java
-C:\Users\phili\workspace\git\SpeckVonSchmeck\src\com\speckvonschmeck\models\Spectrum.java
-C:\Users\phili\workspace\git\SpeckVonSchmeck\src\com\speckvonschmeck\kafka\SpectrumProducer.java
-C:\Users\phili\workspace\git\SpeckVonSchmeck\src\com\speckvonschmeck\models\Meta.java
-C:\Users\phili\workspace\git\SpeckVonSchmeck\src\com\speckvonschmeck\listener\ContextListener.java
-C:\Users\phili\workspace\git\SpeckVonSchmeck\src\com\speckvonschmeck\kafka\SpectrumConsumer.java
+C:\Users\phili\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\models\Data.java
+C:\Users\phili\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\models\Spectrum.java
+C:\Users\phili\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\SpectrumJob.java
+C:\Users\phili\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\models\Meta.java
