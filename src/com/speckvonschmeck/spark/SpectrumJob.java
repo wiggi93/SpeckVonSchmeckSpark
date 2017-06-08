@@ -1,14 +1,17 @@
 package com.speckvonschmeck.spark;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.Duration;
@@ -17,7 +20,11 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka010.ConsumerStrategies;
 import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
+import static com.datastax.spark.connector.japi.CassandraJavaUtil.*;
 
+
+import com.datastax.driver.core.Session;
+import com.datastax.spark.connector.cql.CassandraConnector;
 import com.google.gson.Gson;
 import com.speckvonschmeck.models.Spectrum;
 
@@ -34,11 +41,33 @@ public class SpectrumJob {
 			
 	public static void main(String[] args) throws Exception {
 
-
-		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[1]");
-
+		
+		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[1]").set("spark.cassandra.connection.host", "127.0.0.1");
+		
 		JavaStreamingContext context = new JavaStreamingContext(conf, new Duration(2000));
+		//JavaSparkContext sc = new JavaSparkContext(conf);
+		
+        CassandraConnector connector = CassandraConnector.apply(conf);
+        
+        try (Session session = connector.openSession()) {
+            session.execute("DROP KEYSPACE IF EXISTS java_api");
+            session.execute("CREATE KEYSPACE java_api WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
+            session.execute("CREATE TABLE java_api.products (id INT PRIMARY KEY, name TEXT, parents LIST<INT>)");
+            session.execute("CREATE TABLE java_api.sales (id UUID PRIMARY KEY, product INT, price DECIMAL)");
+            session.execute("CREATE TABLE java_api.summaries (product INT PRIMARY KEY, summary DECIMAL)");
+        }
+        ArrayList<Integer> id = new ArrayList<Integer>();
+        id.add(15);
+        id.add(16);
+        id.add(7);
+        id.add(37);
+        id.add(5);
+        id.add(237);
+        
+//        JavaRDD<Integer> pricesRDD = javaFunctions(sc).cassandraTable("test", "spectrum", mapColumnTo(Integer.class)).select("x");
+//        System.out.println(pricesRDD);
 
+		
 		Map<String, Object> kafkaParams = new HashMap<>();
 		kafkaParams.put("bootstrap.servers", KAFKA_URL);
 		kafkaParams.put("key.deserializer", StringDeserializer.class);
@@ -52,7 +81,6 @@ public class SpectrumJob {
 		final JavaInputDStream<ConsumerRecord<String, String>> dstream = KafkaUtils.createDirectStream(context,
 				LocationStrategies.PreferConsistent(),
 				ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
-
 		dstream.map(new Function<ConsumerRecord<String, String>, Spectrum>() {
 
 			/**
@@ -104,6 +132,7 @@ public class SpectrumJob {
 				
 			}
 		});
+		
 
 		context.start();
 		try {
@@ -113,6 +142,7 @@ public class SpectrumJob {
 			e.printStackTrace();
 		}
 		
-	}
+		
+	}	
 
 }
