@@ -20,11 +20,15 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka010.ConsumerStrategies;
 import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
+import org.slf4j.Logger;
+import org.slf4j.impl.Log4jLoggerFactory;
+
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.*;
 
 
 import com.datastax.driver.core.Session;
 import com.datastax.spark.connector.cql.CassandraConnector;
+import com.datastax.spark.connector.japi.rdd.CassandraJavaRDD;
 import com.google.gson.Gson;
 import com.speckvonschmeck.models.Spectrum;
 
@@ -41,34 +45,37 @@ public class SpectrumJob {
 			
 	public static void main(String[] args) throws Exception {
 
+		Logger log = new Log4jLoggerFactory().getLogger("");
+				
+		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[4]").set("spark.cassandra.connection.host", "127.0.0.1");
 		
-		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[1]").set("spark.cassandra.connection.host", "127.0.0.1");
+		JavaStreamingContext context = new JavaStreamingContext(conf, new Duration(1000));
 		
-		JavaStreamingContext context = new JavaStreamingContext(conf, new Duration(2000));
 		//JavaSparkContext sc = new JavaSparkContext(conf);
 		
         CassandraConnector connector = CassandraConnector.apply(conf);
         
         try (Session session = connector.openSession()) {
-            session.execute("DROP KEYSPACE IF EXISTS java_api");
-            session.execute("CREATE KEYSPACE java_api WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
-            session.execute("CREATE TABLE java_api.products (id INT PRIMARY KEY, name TEXT, parents LIST<INT>)");
-            session.execute("CREATE TABLE java_api.sales (id UUID PRIMARY KEY, product INT, price DECIMAL)");
-            session.execute("CREATE TABLE java_api.summaries (product INT PRIMARY KEY, summary DECIMAL)");
+            session.execute("DROP KEYSPACE IF EXISTS ALPHA");
+            session.execute("CREATE KEYSPACE ALPHA WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
+            session.execute("CREATE TABLE ALPHA.SPECTRUM (id INT PRIMARY KEY, title TEXT, scans TEXT, pepmass TEXT, charge TEXT, rtinseconds TEXT, x LIST<INT>, y LIST<INT>)");
+            //session.execute("CREATE TABLE SPECCOMPARE (id UUID PRIMARY KEY, product INT, price DECIMAL)");
         }
-        ArrayList<Integer> id = new ArrayList<Integer>();
-        id.add(15);
-        id.add(16);
-        id.add(7);
-        id.add(37);
-        id.add(5);
-        id.add(237);
         
-//        JavaRDD<Integer> pricesRDD = javaFunctions(sc).cassandraTable("test", "spectrum", mapColumnTo(Integer.class)).select("x");
-//        System.out.println(pricesRDD);
+        //JavaRDD<Integer> pricesRDD = javaFunctions(sc).cassandraTable("test", "spectrum", mapColumnTo(Integer.class)).select("x");
+       
+        
+//        CassandraJavaRDD<Test> readrdd = javaFunctions(sc).cassandraTable("test", "spectrum", mapRowTo(Test.class)).select(
+//                column("id"),
+//                column("x"),
+//                column("y"));
+        
+        List<Test> objekte= Arrays.asList(new Test(4,4,5), new Test(5,3,5), new Test(6,4,5));
+                
+//       JavaRDD<Test> testrdd = sc.parallelize(objekte);
+//       javaFunctions(testrdd).writerBuilder("test", "spectrum", mapToRow(Test.class)).saveToCassandra();
 
-		
-		Map<String, Object> kafkaParams = new HashMap<>();
+        Map<String, Object> kafkaParams = new HashMap<>();
 		kafkaParams.put("bootstrap.servers", KAFKA_URL);
 		kafkaParams.put("key.deserializer", StringDeserializer.class);
 		kafkaParams.put("value.deserializer", StringDeserializer.class);
@@ -81,59 +88,50 @@ public class SpectrumJob {
 		final JavaInputDStream<ConsumerRecord<String, String>> dstream = KafkaUtils.createDirectStream(context,
 				LocationStrategies.PreferConsistent(),
 				ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
-		dstream.map(new Function<ConsumerRecord<String, String>, Spectrum>() {
+		
+	    dstream.map(new Function<ConsumerRecord<String, String>, Spectrum>() {
 
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Spectrum call(ConsumerRecord<String, String> record) throws Exception {
+				log.warn("-----------HALLLOOOOOOOOOO----------");
 				return new Gson().fromJson(record.value(), Spectrum.class);
 			}
 
-		}).filter(new Function<Spectrum, Boolean>() {
+		}).foreachRDD(new VoidFunction<JavaRDD<Spectrum>>(){
 
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public Boolean call(Spectrum spectrum) throws Exception {
-				return spectrum.getData().get(0).getX()<=500;
-			}
-
-		}).foreachRDD(new VoidFunction<JavaRDD<Spectrum>>() {
-			
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void call(JavaRDD<Spectrum> rdd) throws Exception {
+				// TODO Auto-generated method stub
+				log.warn("-----------HALLLOOOOOOOOOO----------");
+				if(rdd!=null){
+					log.warn(rdd.toDebugString());
+					log.warn(String.valueOf(rdd.count()));
+			        javaFunctions(rdd).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();			
+					rdd.foreachAsync(new VoidFunction<Spectrum>() {
 
-				rdd.foreach(new VoidFunction<Spectrum>() {
+						private static final long serialVersionUID = 1L;
 
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
+						@Override
+						public void call(Spectrum t) throws Exception {
+							// TODO Auto-generated method stub
+							log.warn("-----------HALLLOOOOOOOOOO----------");
 
-					@Override
-					public void call(Spectrum spectrum) throws Exception {
-						if (!rdd.isEmpty())
-						System.out.println("Spark Job received => " + spectrum);
-						
-					}
-				});
+
+							log.warn(t.toString());
+						}
+					});
+				}
 				
 			}
-		});
-		
-
+	    	
+	    });
+        
+	    
+	    
 		context.start();
 		try {
 			context.awaitTermination();
@@ -141,8 +139,6 @@ public class SpectrumJob {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}	
 
 }
