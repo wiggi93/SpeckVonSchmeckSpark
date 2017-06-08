@@ -18,6 +18,7 @@ import org.apache.spark.streaming.kafka010.ConsumerStrategies;
 import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
 
+import com.datastax.spark.connector.cql.CassandraConnector;
 import com.google.gson.Gson;
 import com.speckvonschmeck.models.Spectrum;
 
@@ -112,7 +113,7 @@ public class SpectrumJob {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		CassandraConnector connector = CassandraConnector.apply(context.getConf());
 	}
 
 }
