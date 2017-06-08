@@ -8,8 +8,9 @@ import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
@@ -18,8 +19,7 @@ import org.apache.spark.streaming.kafka010.ConsumerStrategies;
 import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
 
-import com.google.gson.Gson;
-import com.speckvonschmeck.models.Spectrum;
+import scala.Tuple2;
 
 public class SpectrumJob {
 	
@@ -52,58 +52,24 @@ public class SpectrumJob {
 				LocationStrategies.PreferConsistent(),
 				ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
 
-		dstream.map(new Function<ConsumerRecord<String, String>, Spectrum>() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
+		dstream.mapToPair(new PairFunction<ConsumerRecord<String, String>, String, String>() {
 			@Override
-			public Spectrum call(ConsumerRecord<String, String> record) throws Exception {
-				return new Gson().fromJson(record.value(), Spectrum.class);
+			public Tuple2<String, String> call(ConsumerRecord<String, String> record) {
+				System.out.println("Tuple2");
+			return new Tuple2<>(record.key(), record.value());
 			}
-
-		}).filter(new Function<Spectrum, Boolean>() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public Boolean call(Spectrum spectrum) throws Exception {
-				return spectrum.getData().get(0).getX()<=500;
-			}
-
-		}).foreachRDD(new VoidFunction<JavaRDD<Spectrum>>() {
 			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+		}).foreachRDD(new VoidFunction<JavaPairRDD<String, String>>() {
+			
 
 			@Override
-			public void call(JavaRDD<Spectrum> rdd) throws Exception {
-
-				rdd.foreach(new VoidFunction<Spectrum>() {
-
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void call(Spectrum spectrum) throws Exception {
-						if (!rdd.isEmpty())
-						System.out.println("Spark Job received => " + spectrum);
-						
-					}
-				});
+			public void call(JavaPairRDD<String, String> arg0) throws Exception {
 				
-			}
-		});
+				JavaRDD ohnePair = JavaRDD.fromRDD(JavaPairRDD.toRDD(arg0), arg0.classTag());
+				System.out.println(ohnePair.toString());
 
+			}
+			});
 		context.start();
 		try {
 			context.awaitTermination();

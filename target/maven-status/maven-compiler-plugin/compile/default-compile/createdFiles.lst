@@ -1,12 +1,10 @@
 com\speckvonschmeck\spark\SpectrumJob$2.class
 com\speckvonschmeck\kafka\SpectrumProducer.class
 com\speckvonschmeck\rest\SpectrumResource.class
-com\speckvonschmeck\spark\SpectrumJob$3.class
 com\speckvonschmeck\models\Data.class
 com\speckvonschmeck\kafka\SpectrumConsumer.class
 com\speckvonschmeck\models\Meta.class
 com\speckvonschmeck\spark\SpectrumJob$1.class
 com\speckvonschmeck\models\Spectrum.class
 com\speckvonschmeck\listener\ContextListener.class
-com\speckvonschmeck\spark\SpectrumJob$1$1.class
 com\speckvonschmeck\spark\SpectrumJob.class
