@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Spectrum {
 	String title, scans, pepmass, charge, rtInSeconds;
-	List<Integer> x;
-	List<Integer> y;
+	List<Double> x;
+	List<Double> y;
 	
 	
 	public String getTitle() {
@@ -38,16 +38,16 @@ public class Spectrum {
 	public void setRtInSeconds(String rtInSeconds) {
 		this.rtInSeconds = rtInSeconds;
 	}
-	public List<Integer> getX() {
+	public List<Double> getX() {
 		return x;
 	}
-	public void setX(List<Integer> x) {
+	public void setX(List<Double> x) {
 		this.x = x;
 	}
-	public List<Integer> getY() {
+	public List<Double> getY() {
 		return y;
 	}
-	public void setY(List<Integer> y) {
+	public void setY(List<Double> y) {
 		this.y = y;
 	}
 	
