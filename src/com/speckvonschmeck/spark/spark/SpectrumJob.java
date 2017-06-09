@@ -39,9 +39,7 @@ public class SpectrumJob {
 			System.getenv("KAFKA_URL")
 			: "192.168.178.27:9092";//64
 			
-	public final static String CASSANDRA_URL = System.getenv("KAFKA_URL") != null ? 
-			System.getenv("KAFKA_URL")
-			: "192.168.178.27:9042";//64
+	public final static String CASSANDRA_URL = "192.168.178.27";//64
 			
 	public final static String KAFKA_TOPIC = System.getenv("KAFKA_TOPIC") != null ? 
 			System.getenv("KAFKA_TOPIC")

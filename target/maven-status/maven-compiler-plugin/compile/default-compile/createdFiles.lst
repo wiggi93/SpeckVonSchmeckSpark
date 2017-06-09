@@ -1,1 +1,15 @@
-com\speckvonschmeck\models\Data.class
+com\speckvonschmeck\spark\spark\SpectrumJob2$1$1.class
+com\speckvonschmeck\spark\spark\SpectrumJob$1.class
+com\speckvonschmeck\spark\models\Meta.class
+com\speckvonschmeck\spark\spark\SpectrumJob.class
+com\speckvonschmeck\spark\models\Spectrum.class
+com\speckvonschmeck\spark\spark\SpectrumJob$2.class
+com\speckvonschmeck\spark\spark\Test.class
+com\speckvonschmeck\spark\cassandra\CassandraTester.class
+com\speckvonschmeck\spark\spark\SpectrumJob2$1.class
+com\speckvonschmeck\spark\models\Data.class
+com\speckvonschmeck\spark\spark\backup.class
+com\speckvonschmeck\spark\models\SingleSpectrum.class
+com\speckvonschmeck\spark\spark\SpectrumJob2$2.class
+com\speckvonschmeck\spark\spark\SpectrumJob$1$1.class
+com\speckvonschmeck\spark\spark\SpectrumJob2.class
