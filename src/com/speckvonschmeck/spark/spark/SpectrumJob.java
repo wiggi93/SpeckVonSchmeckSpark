@@ -1,4 +1,4 @@
-package com.speckvonschmeck.spark;
+package com.speckvonschmeck.spark.spark;
 
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.javaFunctions;
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.mapToRow;
@@ -28,9 +28,9 @@ import org.slf4j.impl.Log4jLoggerFactory;
 import com.datastax.driver.core.Session;
 import com.datastax.spark.connector.cql.CassandraConnector;
 import com.google.gson.Gson;
-import com.speckvonschmeck.cassandra.CassandraTester;
-import com.speckvonschmeck.models.SingleSpectrum;
-import com.speckvonschmeck.models.Spectrum;
+import com.speckvonschmeck.spark.cassandra.CassandraTester;
+import com.speckvonschmeck.spark.models.SingleSpectrum;
+import com.speckvonschmeck.spark.models.Spectrum;
 
 public class SpectrumJob {
 	

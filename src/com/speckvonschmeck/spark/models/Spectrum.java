@@ -1,4 +1,4 @@
-package com.speckvonschmeck.models;
+package com.speckvonschmeck.spark.models;
 
 import java.util.List;
 

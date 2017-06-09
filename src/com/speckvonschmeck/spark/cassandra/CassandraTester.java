@@ -1,12 +1,12 @@
-package com.speckvonschmeck.cassandra;
+package com.speckvonschmeck.spark.cassandra;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.speckvonschmeck.models.Data;
-import com.speckvonschmeck.models.Meta;
-import com.speckvonschmeck.models.SingleSpectrum;
-import com.speckvonschmeck.models.Spectrum;
+import com.speckvonschmeck.spark.models.Data;
+import com.speckvonschmeck.spark.models.Meta;
+import com.speckvonschmeck.spark.models.SingleSpectrum;
+import com.speckvonschmeck.spark.models.Spectrum;
 
 public class CassandraTester {
 	

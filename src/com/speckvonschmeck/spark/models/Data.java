@@ -1,4 +1,4 @@
-package com.speckvonschmeck.models;
+package com.speckvonschmeck.spark.models;
 
 public class Data {
 	double x, y;

@@ -1,4 +1,4 @@
-package com.speckvonschmeck.spark;
+package com.speckvonschmeck.spark.spark;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.impl.Log4jLoggerFactory;
 
 import com.google.gson.Gson;
-import com.speckvonschmeck.models.Spectrum;
+import com.speckvonschmeck.spark.models.Spectrum;
 
 public class SpectrumJob2 {
 	
