@@ -1,4 +1,4 @@
-package com.speckvonschmeck.models;
+package com.speckvonschmeck.spark.models;
 
 public class Meta{
 	String title, scans, pepmass, charge, rtInSeconds;

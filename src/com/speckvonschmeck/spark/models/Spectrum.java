@@ -1,10 +1,11 @@
-package com.speckvonschmeck.models;
+package com.speckvonschmeck.spark.models;
 
 import java.util.List;
 
 public class Spectrum {
 	Meta meta;
 	List<Data> data;
+	
 	
 	public Meta getMeta() {
 		return meta;
