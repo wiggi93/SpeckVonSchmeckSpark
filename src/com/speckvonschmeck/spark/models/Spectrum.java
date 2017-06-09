@@ -1,11 +1,12 @@
 package com.speckvonschmeck.spark.models;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Spectrum {
-	String title, scans, pepmass, charge, rtInSeconds;
-	List<Integer> x;
-	List<Integer> y;
+public class Spectrum implements Serializable {
+	String title, scans, pepmass, charge, rtinseconds;
+	List<Double> x;
+	List<Double> y;
 	
 	
 	public String getTitle() {
@@ -32,29 +33,29 @@ public class Spectrum {
 	public void setCharge(String charge) {
 		this.charge = charge;
 	}
-	public String getRtInSeconds() {
-		return rtInSeconds;
+	public String getrtinseconds() {
+		return rtinseconds;
 	}
-	public void setRtInSeconds(String rtInSeconds) {
-		this.rtInSeconds = rtInSeconds;
+	public void setrtinseconds(String rtinseconds) {
+		this.rtinseconds = rtinseconds;
 	}
-	public List<Integer> getX() {
+	public List<Double> getX() {
 		return x;
 	}
-	public void setX(List<Integer> x) {
+	public void setX(List<Double> x) {
 		this.x = x;
 	}
-	public List<Integer> getY() {
+	public List<Double> getY() {
 		return y;
 	}
-	public void setY(List<Integer> y) {
+	public void setY(List<Double> y) {
 		this.y = y;
 	}
 	
 	@Override
 	public String toString() {
 		return "Spectrum [title=" + title + ", scans=" + scans + ", pepmass=" + pepmass + ", charge=" + charge
-				+ ", rtInSeconds=" + rtInSeconds + ", x=" + x + ", y=" + y + "]";
+				+ ", rtinseconds=" + rtinseconds + ", x=" + x + ", y=" + y + "]";
 	}
 	
 }

@@ -2,6 +2,7 @@ package com.speckvonschmeck.spark.spark;
 
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.javaFunctions;
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.mapToRow;
+import static com.datastax.spark.connector.japi.CassandraJavaUtil.mapRowTo;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +28,8 @@ import org.slf4j.impl.Log4jLoggerFactory;
 
 import com.datastax.driver.core.Session;
 import com.datastax.spark.connector.cql.CassandraConnector;
+import com.datastax.spark.connector.japi.CassandraJavaUtil;
+import com.datastax.spark.connector.japi.CassandraRow;
 import com.google.gson.Gson;
 import com.speckvonschmeck.spark.cassandra.CassandraTester;
 import com.speckvonschmeck.spark.models.Spectrum;
@@ -38,7 +41,7 @@ public class SpectrumJob {
 			System.getenv("KAFKA_URL")
 			: "192.168.178.27:9092";//64
 			
-	public final static String CASSANDRA_URL = "192.168.178.27";//64
+	public final static String CASSANDRA_URL = "localhost";//64
 			
 	public final static String KAFKA_TOPIC = System.getenv("KAFKA_TOPIC") != null ? 
 			System.getenv("KAFKA_TOPIC")
@@ -56,12 +59,22 @@ public class SpectrumJob {
 		
         CassandraConnector connector = CassandraConnector.apply(conf);
         
-        try (Session session = connector.openSession()) {
-            session.execute("DROP KEYSPACE IF EXISTS ALPHA");
-            session.execute("CREATE KEYSPACE ALPHA WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
-            session.execute("CREATE TABLE ALPHA.SPECTRUM (title TEXT PRIMARY KEY, scans TEXT, pepmass TEXT, charge TEXT, rtinseconds TEXT, x LIST<INT>, y LIST<INT>)");
-            //session.execute("CREATE TABLE SPECCOMPARE (id UUID PRIMARY KEY, product INT, price DECIMAL)");
-        }
+//        try (Session session = connector.openSession()) {
+//            session.execute("DROP KEYSPACE IF EXISTS BETA");
+//            session.execute("CREATE KEYSPACE BETA WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
+//            session.execute("CREATE TABLE BETA.SPECTRUM (title TEXT PRIMARY KEY, scans TEXT, pepmass TEXT, charge TEXT, rtinseconds TEXT, x LIST<INT>, y LIST<INT>)");
+//        }
+        
+        
+        List<Spectrum> spectra = CassandraTester.generateSpectraFromSpectrum();
+		
+//		JavaRDD<Spectrum> rdd2 = (sc).parallelize(spectra);
+//		javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();	
+        
+		JavaRDD<Spectrum> personRdd = CassandraJavaUtil.javaFunctions(sc)
+                .cassandraTable("alpha", "spectrum", mapRowTo(Spectrum.class));
+		javaFunctions(personRdd).writerBuilder("beta", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();	
+		
         
         Map<String, Object> kafkaParams = new HashMap<>();
 		kafkaParams.put("bootstrap.servers", KAFKA_URL);
@@ -73,75 +86,75 @@ public class SpectrumJob {
 
 		Collection<String> topics = Arrays.asList(KAFKA_TOPIC);
 
-		final JavaInputDStream<ConsumerRecord<String, String>> dstream = KafkaUtils.createDirectStream(context,
-				LocationStrategies.PreferConsistent(),
-				ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
-		
-	    dstream.map(new Function<ConsumerRecord<String, String>, Spectrum>() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public Spectrum call(ConsumerRecord<String, String> record) throws Exception {
-				log.warn("-----------HALLLOOOOOOOOOO----------");
-				return new Gson().fromJson(record.value(), Spectrum.class);
-			}
-
-		}).foreachRDD(new VoidFunction<JavaRDD<Spectrum>>(){
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void call(JavaRDD<Spectrum> rdd) throws Exception {
-				// TODO Auto-generated method stub
-				log.warn("-----------HALLLOOOOOOOOOO----------");
-				if(rdd!=null){
-					log.warn(rdd.toDebugString());
-					log.warn(String.valueOf(rdd.count()));
-			        //javaFunctions(rdd).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();			
-					rdd.foreachAsync(new VoidFunction<Spectrum>() {
-
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void call(Spectrum spectrum) throws Exception {
-							// TODO Auto-generated method stub
-					        
-					        List<Spectrum> spectra = CassandraTester.generateSpectraFromSpectrum(spectrum);
-							
-							JavaRDD<Spectrum> rdd2 = (sc).parallelize(spectra);
-							javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();							
-					        
-							
-							log.warn("-----------HALLLOOOOOOOOOO----------");
-							log.warn(spectrum.toString());
-							
-							
-						}
-					});
-				}
-				
-			}
-	    	
-	    });
-        
-	    
-	    
-		context.start();
-		try {
-			context.awaitTermination();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		final JavaInputDStream<ConsumerRecord<String, String>> dstream = KafkaUtils.createDirectStream(context,
+//				LocationStrategies.PreferConsistent(),
+//				ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
+//		
+//	    dstream.map(new Function<ConsumerRecord<String, String>, Spectrum>() {
+//
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public Spectrum call(ConsumerRecord<String, String> record) throws Exception {
+//				log.warn("-----------HALLLOOOOOOOOOO----------");
+//				return new Gson().fromJson(record.value(), Spectrum.class);
+//			}
+//
+//		}).foreachRDD(new VoidFunction<JavaRDD<Spectrum>>(){
+//
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public void call(JavaRDD<Spectrum> rdd) throws Exception {
+//				// TODO Auto-generated method stub
+//				log.warn("-----------HALLLOOOOOOOOOO----------");
+//				if(rdd!=null){
+//					log.warn(rdd.toDebugString());
+//					log.warn(String.valueOf(rdd.count()));
+//			        //javaFunctions(rdd).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();			
+//					rdd.foreachAsync(new VoidFunction<Spectrum>() {
+//
+//						private static final long serialVersionUID = 1L;
+//
+//						@Override
+//						public void call(Spectrum spectrum) throws Exception {
+//							// TODO Auto-generated method stub
+//					        
+//					        List<Spectrum> spectra = CassandraTester.generateSpectraFromSpectrum(spectrum);
+//							
+//							JavaRDD<Spectrum> rdd2 = (sc).parallelize(spectra);
+//							javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();							
+//					        
+//							
+//							log.warn("-----------HALLLOOOOOOOOOO----------");
+//							log.warn(spectrum.toString());
+//							
+//							
+//						}
+//					});
+//				}
+//				
+//			}
+//	    	
+//	    });
+//        
+//	    
+//	    
+//		context.start();
+//		try {
+//			context.awaitTermination();
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}	
 
 }
-
-
-/*
- * noch nicht getestet: treffen mit roman am 09.06.17
- */
+//
+//
+///*
+// * noch nicht getestet: treffen mit roman am 09.06.17
+// */
 //JavaDStream<String> stream1 = dstream.transform(
 //	      // Make sure you can get offset ranges from the rdd
 //	      new Function<JavaRDD<ConsumerRecord<String, String>>,
