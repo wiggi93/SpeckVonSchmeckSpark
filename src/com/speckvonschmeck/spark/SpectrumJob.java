@@ -1,6 +1,8 @@
 package com.speckvonschmeck.spark;
 
-import java.util.ArrayList;
+import static com.datastax.spark.connector.japi.CassandraJavaUtil.javaFunctions;
+import static com.datastax.spark.connector.japi.CassandraJavaUtil.mapToRow;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,15 +25,10 @@ import org.apache.spark.streaming.kafka010.LocationStrategies;
 import org.slf4j.Logger;
 import org.slf4j.impl.Log4jLoggerFactory;
 
-import static com.datastax.spark.connector.japi.CassandraJavaUtil.*;
-
-
 import com.datastax.driver.core.Session;
 import com.datastax.spark.connector.cql.CassandraConnector;
-import com.datastax.spark.connector.japi.rdd.CassandraJavaRDD;
 import com.google.gson.Gson;
-import com.speckvonschmeck.models.Data;
-import com.speckvonschmeck.models.Meta;
+import com.speckvonschmeck.cassandra.CassandraTester;
 import com.speckvonschmeck.models.SingleSpectrum;
 import com.speckvonschmeck.models.Spectrum;
 
@@ -40,7 +37,11 @@ public class SpectrumJob {
 	
 	public final static String KAFKA_URL = System.getenv("KAFKA_URL") != null ? 
 			System.getenv("KAFKA_URL")
-			: "192.168.178.64:9092";
+			: "192.168.178.27:9092";//64
+			
+	public final static String CASSANDRA_URL = System.getenv("KAFKA_URL") != null ? 
+			System.getenv("KAFKA_URL")
+			: "192.168.178.27:9042";//64
 			
 	public final static String KAFKA_TOPIC = System.getenv("KAFKA_TOPIC") != null ? 
 			System.getenv("KAFKA_TOPIC")
@@ -50,7 +51,7 @@ public class SpectrumJob {
 
 		Logger log = new Log4jLoggerFactory().getLogger("");
 				
-		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[4]").set("spark.cassandra.connection.host", "127.0.0.1");
+		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[4]").set("spark.cassandra.connection.host", CASSANDRA_URL);
 		
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		JavaStreamingContext context = new JavaStreamingContext(sc, new Duration(1000));
@@ -65,57 +66,6 @@ public class SpectrumJob {
             //session.execute("CREATE TABLE SPECCOMPARE (id UUID PRIMARY KEY, product INT, price DECIMAL)");
         }
         
-//        Spectrum test = new Spectrum();
-//		Data testdata1= new Data();
-//		Data testdata2= new Data();
-//		Meta testmeta= new Meta();
-//		List<Data> liste = new ArrayList<Data>();
-//		
-//		
-//		testdata1.setX(142);
-//		testdata1.setY(12422);
-//		testdata2.setX(2533);
-//		testdata2.setY(34);
-//		liste.add(testdata1);
-//		liste.add(testdata2);
-//		testmeta.setCharge("slojgpos");
-//		testmeta.setPepmass("osihgiosfh");
-//		testmeta.setRtInSeconds("soihgoih");
-//		testmeta.setScans("slighopsieg");
-//		testmeta.setTitle("lshgoi");
-//		
-//		test.setData(liste);
-//		test.setMeta(testmeta);
-//		
-//		
-//		SingleSpectrum mitListe = new SingleSpectrum();
-//		List<SingleSpectrum> spectra = new ArrayList<SingleSpectrum>();
-//		
-//		mitListe.setCharge(test.getMeta().getCharge());
-//		mitListe.setPepmass(test.getMeta().getPepmass());
-//		mitListe.setRtinseconds(test.getMeta().getRtInSeconds());
-//		mitListe.setScans(test.getMeta().getScans());
-//		mitListe.setTitle(test.getMeta().getTitle());
-//		
-//		List<Integer> x= new ArrayList<Integer>();
-//		List<Integer> y= new ArrayList<Integer>();
-//		
-//		for (int i=0; i<test.getData().size(); i++){
-//			x.add((int) test.getData().get(i).getX());
-//			y.add((int) test.getData().get(i).getY());
-//		}
-//		mitListe.setX(x);
-//		mitListe.setY(y);
-//		spectra.add(mitListe);
-//		
-//		
-//		JavaRDD<SingleSpectrum> rdd2 = (sc).parallelize(spectra);
-//		javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(SingleSpectrum.class)).saveToCassandra();							
-        
-        
-        
-        //JavaRDD<Integer> pricesRDD = javaFunctions(sc).cassandraTable("test", "spectrum", mapColumnTo(Integer.class)).select("x");
-                       
         Map<String, Object> kafkaParams = new HashMap<>();
 		kafkaParams.put("bootstrap.servers", KAFKA_URL);
 		kafkaParams.put("key.deserializer", StringDeserializer.class);
@@ -157,61 +107,17 @@ public class SpectrumJob {
 						private static final long serialVersionUID = 1L;
 
 						@Override
-						public void call(Spectrum t) throws Exception {
+						public void call(Spectrum spectrum) throws Exception {
 							// TODO Auto-generated method stub
 					        
-					        
-					        Spectrum test = new Spectrum();
-							Data testdata1= new Data();
-							Data testdata2= new Data();
-							Meta testmeta= new Meta();
-							List<Data> liste = new ArrayList<Data>();
-							
-							
-							testdata1.setX(142);
-							testdata1.setY(12422);
-							testdata2.setX(2533);
-							testdata2.setY(34);
-							liste.add(testdata1);
-							liste.add(testdata2);
-							testmeta.setCharge("slojgpos");
-							testmeta.setPepmass("osihgiosfh");
-							testmeta.setRtInSeconds("soihgoih");
-							testmeta.setScans("slighopsieg");
-							testmeta.setTitle("lshgoi");
-							
-							test.setData(liste);
-							test.setMeta(testmeta);
-							
-							
-							SingleSpectrum mitListe = new SingleSpectrum();
-							List<SingleSpectrum> spectra = new ArrayList<SingleSpectrum>();
-							
-							mitListe.setCharge(t.getMeta().getCharge());
-							mitListe.setPepmass(t.getMeta().getPepmass());
-							mitListe.setRtinseconds(t.getMeta().getRtInSeconds());
-							mitListe.setScans(t.getMeta().getScans());
-							mitListe.setTitle(t.getMeta().getTitle());
-							
-							List<Integer> x= new ArrayList<Integer>();
-							List<Integer> y= new ArrayList<Integer>();
-							
-							for (int i=0; i<t.getData().size(); i++){
-								x.add((int) t.getData().get(i).getX());
-								y.add((int) t.getData().get(i).getY());
-							}
-							mitListe.setX(x);
-							mitListe.setY(y);
-							spectra.add(mitListe);
-							
+					        List<SingleSpectrum> spectra = CassandraTester.generateSingleSpectraFromSpectrum(spectrum);
 							
 							JavaRDD<SingleSpectrum> rdd2 = (sc).parallelize(spectra);
 							javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(SingleSpectrum.class)).saveToCassandra();							
 					        
 							
 							log.warn("-----------HALLLOOOOOOOOOO----------");
-							log.warn(t.toString());
-							
+							log.warn(spectrum.toString());
 							
 							
 						}
@@ -234,3 +140,54 @@ public class SpectrumJob {
 	}	
 
 }
+
+
+/*
+ * noch nicht getestet: treffen mit roman am 09.06.17
+ */
+//JavaDStream<String> stream1 = dstream.transform(
+//	      // Make sure you can get offset ranges from the rdd
+//	      new Function<JavaRDD<ConsumerRecord<String, String>>,
+//	        JavaRDD<ConsumerRecord<String, String>>>() {
+//	          @Override
+//	          public JavaRDD<ConsumerRecord<String, String>> call(
+//	            JavaRDD<ConsumerRecord<String, String>> rdd
+//	          ) {
+//	            OffsetRange[] offsets = ((HasOffsetRanges) rdd.rdd()).offsetRanges();
+//	            offsetRanges.set(offsets);
+//	            return rdd;
+//	          }
+//	        }
+//	    ).map(
+//	        new Function<ConsumerRecord<String, String>, String>() {
+//	          @Override
+//	          public String call(ConsumerRecord<String, String> r) {
+//	        	  log.warn("HEY");
+//	        	  log.warn(r.value());
+//	            return r.value();
+//	          }
+//	        }
+//	    );
+//stream1.foreachRDD(new VoidFunction<JavaRDD<String>>() {
+//
+//	@Override
+//	public void call(JavaRDD<String> rdd) throws Exception {
+//		// TODO Auto-generated method stub
+//		log.warn("HEYHEYHEY");
+//		if(rdd!=null){
+//			log.warn(rdd.toDebugString());
+//			log.warn(String.valueOf(rdd.count()));
+//	        //javaFunctions(rdd).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();			
+//			rdd.foreachAsync(new VoidFunction<String>() {
+//
+//				@Override
+//				public void call(String t) throws Exception {
+//					// TODO Auto-generated method stub
+//					log.warn("HIER KOMMT T");
+//					log.warn(t);
+//				}
+//				
+//			});
+//		}
+//	}
+//});
