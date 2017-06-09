@@ -34,7 +34,6 @@ import com.speckvonschmeck.models.Data;
 import com.speckvonschmeck.models.Meta;
 import com.speckvonschmeck.models.SingleSpectrum;
 import com.speckvonschmeck.models.Spectrum;
-import com.speckvonschmeck.models.Spectrum2;
 
 public class SpectrumJob {
 	
@@ -66,52 +65,52 @@ public class SpectrumJob {
             //session.execute("CREATE TABLE SPECCOMPARE (id UUID PRIMARY KEY, product INT, price DECIMAL)");
         }
         
-        Spectrum test = new Spectrum();
-		Data testdata1= new Data();
-		Data testdata2= new Data();
-		Meta testmeta= new Meta();
-		List<Data> liste = new ArrayList<Data>();
-		
-		
-		testdata1.setX(142);
-		testdata1.setY(12422);
-		testdata2.setX(2533);
-		testdata2.setY(34);
-		liste.add(testdata1);
-		liste.add(testdata2);
-		testmeta.setCharge("slojgpos");
-		testmeta.setPepmass("osihgiosfh");
-		testmeta.setRtInSeconds("soihgoih");
-		testmeta.setScans("slighopsieg");
-		testmeta.setTitle("lshgoi");
-		
-		test.setData(liste);
-		test.setMeta(testmeta);
-		
-		
-		SingleSpectrum mitListe = new SingleSpectrum();
-		List<SingleSpectrum> spectra = new ArrayList<SingleSpectrum>();
-		
-		mitListe.setCharge(test.getMeta().getCharge());
-		mitListe.setPepmass(test.getMeta().getPepmass());
-		mitListe.setRtinseconds(test.getMeta().getRtInSeconds());
-		mitListe.setScans(test.getMeta().getScans());
-		mitListe.setTitle(test.getMeta().getTitle());
-		
-		List<Integer> x= new ArrayList<Integer>();
-		List<Integer> y= new ArrayList<Integer>();
-		
-		for (int i=0; i<test.getData().size(); i++){
-			x.add((int) test.getData().get(i).getX());
-			y.add((int) test.getData().get(i).getY());
-		}
-		mitListe.setX(x);
-		mitListe.setY(y);
-		spectra.add(mitListe);
-		
-		
-		JavaRDD<SingleSpectrum> rdd2 = (sc).parallelize(spectra);
-		javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(SingleSpectrum.class)).saveToCassandra();							
+//        Spectrum test = new Spectrum();
+//		Data testdata1= new Data();
+//		Data testdata2= new Data();
+//		Meta testmeta= new Meta();
+//		List<Data> liste = new ArrayList<Data>();
+//		
+//		
+//		testdata1.setX(142);
+//		testdata1.setY(12422);
+//		testdata2.setX(2533);
+//		testdata2.setY(34);
+//		liste.add(testdata1);
+//		liste.add(testdata2);
+//		testmeta.setCharge("slojgpos");
+//		testmeta.setPepmass("osihgiosfh");
+//		testmeta.setRtInSeconds("soihgoih");
+//		testmeta.setScans("slighopsieg");
+//		testmeta.setTitle("lshgoi");
+//		
+//		test.setData(liste);
+//		test.setMeta(testmeta);
+//		
+//		
+//		SingleSpectrum mitListe = new SingleSpectrum();
+//		List<SingleSpectrum> spectra = new ArrayList<SingleSpectrum>();
+//		
+//		mitListe.setCharge(test.getMeta().getCharge());
+//		mitListe.setPepmass(test.getMeta().getPepmass());
+//		mitListe.setRtinseconds(test.getMeta().getRtInSeconds());
+//		mitListe.setScans(test.getMeta().getScans());
+//		mitListe.setTitle(test.getMeta().getTitle());
+//		
+//		List<Integer> x= new ArrayList<Integer>();
+//		List<Integer> y= new ArrayList<Integer>();
+//		
+//		for (int i=0; i<test.getData().size(); i++){
+//			x.add((int) test.getData().get(i).getX());
+//			y.add((int) test.getData().get(i).getY());
+//		}
+//		mitListe.setX(x);
+//		mitListe.setY(y);
+//		spectra.add(mitListe);
+//		
+//		
+//		JavaRDD<SingleSpectrum> rdd2 = (sc).parallelize(spectra);
+//		javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(SingleSpectrum.class)).saveToCassandra();							
         
         
         
@@ -188,18 +187,18 @@ public class SpectrumJob {
 							SingleSpectrum mitListe = new SingleSpectrum();
 							List<SingleSpectrum> spectra = new ArrayList<SingleSpectrum>();
 							
-							mitListe.setCharge(test.getMeta().getCharge());
-							mitListe.setPepmass(test.getMeta().getPepmass());
-							mitListe.setRtinseconds(test.getMeta().getRtInSeconds());
-							mitListe.setScans(test.getMeta().getScans());
-							mitListe.setTitle(test.getMeta().getTitle());
+							mitListe.setCharge(t.getMeta().getCharge());
+							mitListe.setPepmass(t.getMeta().getPepmass());
+							mitListe.setRtinseconds(t.getMeta().getRtInSeconds());
+							mitListe.setScans(t.getMeta().getScans());
+							mitListe.setTitle(t.getMeta().getTitle());
 							
 							List<Integer> x= new ArrayList<Integer>();
 							List<Integer> y= new ArrayList<Integer>();
 							
-							for (int i=0; i<test.getData().size(); i++){
-								x.add((int) test.getData().get(i).getX());
-								y.add((int) test.getData().get(i).getY());
+							for (int i=0; i<t.getData().size(); i++){
+								x.add((int) t.getData().get(i).getX());
+								y.add((int) t.getData().get(i).getY());
 							}
 							mitListe.setX(x);
 							mitListe.setY(y);
