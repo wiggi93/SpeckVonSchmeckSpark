@@ -30,7 +30,11 @@ import com.datastax.driver.core.Session;
 import com.datastax.spark.connector.cql.CassandraConnector;
 import com.datastax.spark.connector.japi.rdd.CassandraJavaRDD;
 import com.google.gson.Gson;
+import com.speckvonschmeck.models.Data;
+import com.speckvonschmeck.models.Meta;
+import com.speckvonschmeck.models.SingleSpectrum;
 import com.speckvonschmeck.models.Spectrum;
+import com.speckvonschmeck.models.Spectrum2;
 
 public class SpectrumJob {
 	
@@ -49,32 +53,70 @@ public class SpectrumJob {
 				
 		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[4]").set("spark.cassandra.connection.host", "127.0.0.1");
 		
-		JavaStreamingContext context = new JavaStreamingContext(conf, new Duration(1000));
+		JavaSparkContext sc = new JavaSparkContext(conf);
+		JavaStreamingContext context = new JavaStreamingContext(sc, new Duration(1000));
 		
-		//JavaSparkContext sc = new JavaSparkContext(conf);
 		
         CassandraConnector connector = CassandraConnector.apply(conf);
         
         try (Session session = connector.openSession()) {
             session.execute("DROP KEYSPACE IF EXISTS ALPHA");
             session.execute("CREATE KEYSPACE ALPHA WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
-            session.execute("CREATE TABLE ALPHA.SPECTRUM (id INT PRIMARY KEY, title TEXT, scans TEXT, pepmass TEXT, charge TEXT, rtinseconds TEXT, x LIST<INT>, y LIST<INT>)");
+            session.execute("CREATE TABLE ALPHA.SPECTRUM (title TEXT PRIMARY KEY, scans TEXT, pepmass TEXT, charge TEXT, rtinseconds TEXT, x LIST<INT>, y LIST<INT>)");
             //session.execute("CREATE TABLE SPECCOMPARE (id UUID PRIMARY KEY, product INT, price DECIMAL)");
         }
         
+        Spectrum test = new Spectrum();
+		Data testdata1= new Data();
+		Data testdata2= new Data();
+		Meta testmeta= new Meta();
+		List<Data> liste = new ArrayList<Data>();
+		
+		
+		testdata1.setX(142);
+		testdata1.setY(12422);
+		testdata2.setX(2533);
+		testdata2.setY(34);
+		liste.add(testdata1);
+		liste.add(testdata2);
+		testmeta.setCharge("slojgpos");
+		testmeta.setPepmass("osihgiosfh");
+		testmeta.setRtInSeconds("soihgoih");
+		testmeta.setScans("slighopsieg");
+		testmeta.setTitle("lshgoi");
+		
+		test.setData(liste);
+		test.setMeta(testmeta);
+		
+		
+		SingleSpectrum mitListe = new SingleSpectrum();
+		List<SingleSpectrum> spectra = new ArrayList<SingleSpectrum>();
+		
+		mitListe.setCharge(test.getMeta().getCharge());
+		mitListe.setPepmass(test.getMeta().getPepmass());
+		mitListe.setRtinseconds(test.getMeta().getRtInSeconds());
+		mitListe.setScans(test.getMeta().getScans());
+		mitListe.setTitle(test.getMeta().getTitle());
+		
+		List<Integer> x= new ArrayList<Integer>();
+		List<Integer> y= new ArrayList<Integer>();
+		
+		for (int i=0; i<test.getData().size(); i++){
+			x.add((int) test.getData().get(i).getX());
+			y.add((int) test.getData().get(i).getY());
+		}
+		mitListe.setX(x);
+		mitListe.setY(y);
+		spectra.add(mitListe);
+		
+		
+		JavaRDD<SingleSpectrum> rdd2 = (sc).parallelize(spectra);
+		javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(SingleSpectrum.class)).saveToCassandra();							
+        
+        
+        
         //JavaRDD<Integer> pricesRDD = javaFunctions(sc).cassandraTable("test", "spectrum", mapColumnTo(Integer.class)).select("x");
-       
-        
-//        CassandraJavaRDD<Test> readrdd = javaFunctions(sc).cassandraTable("test", "spectrum", mapRowTo(Test.class)).select(
-//                column("id"),
-//                column("x"),
-//                column("y"));
-        
-        List<Test> objekte= Arrays.asList(new Test(4,4,5), new Test(5,3,5), new Test(6,4,5));
-                
-//       JavaRDD<Test> testrdd = sc.parallelize(objekte);
-//       javaFunctions(testrdd).writerBuilder("test", "spectrum", mapToRow(Test.class)).saveToCassandra();
-
+                       
         Map<String, Object> kafkaParams = new HashMap<>();
 		kafkaParams.put("bootstrap.servers", KAFKA_URL);
 		kafkaParams.put("key.deserializer", StringDeserializer.class);
@@ -110,7 +152,7 @@ public class SpectrumJob {
 				if(rdd!=null){
 					log.warn(rdd.toDebugString());
 					log.warn(String.valueOf(rdd.count()));
-			        javaFunctions(rdd).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();			
+			        //javaFunctions(rdd).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();			
 					rdd.foreachAsync(new VoidFunction<Spectrum>() {
 
 						private static final long serialVersionUID = 1L;
@@ -118,10 +160,61 @@ public class SpectrumJob {
 						@Override
 						public void call(Spectrum t) throws Exception {
 							// TODO Auto-generated method stub
+					        
+					        
+					        Spectrum test = new Spectrum();
+							Data testdata1= new Data();
+							Data testdata2= new Data();
+							Meta testmeta= new Meta();
+							List<Data> liste = new ArrayList<Data>();
+							
+							
+							testdata1.setX(142);
+							testdata1.setY(12422);
+							testdata2.setX(2533);
+							testdata2.setY(34);
+							liste.add(testdata1);
+							liste.add(testdata2);
+							testmeta.setCharge("slojgpos");
+							testmeta.setPepmass("osihgiosfh");
+							testmeta.setRtInSeconds("soihgoih");
+							testmeta.setScans("slighopsieg");
+							testmeta.setTitle("lshgoi");
+							
+							test.setData(liste);
+							test.setMeta(testmeta);
+							
+							
+							SingleSpectrum mitListe = new SingleSpectrum();
+							List<SingleSpectrum> spectra = new ArrayList<SingleSpectrum>();
+							
+							mitListe.setCharge(test.getMeta().getCharge());
+							mitListe.setPepmass(test.getMeta().getPepmass());
+							mitListe.setRtinseconds(test.getMeta().getRtInSeconds());
+							mitListe.setScans(test.getMeta().getScans());
+							mitListe.setTitle(test.getMeta().getTitle());
+							
+							List<Integer> x= new ArrayList<Integer>();
+							List<Integer> y= new ArrayList<Integer>();
+							
+							for (int i=0; i<test.getData().size(); i++){
+								x.add((int) test.getData().get(i).getX());
+								y.add((int) test.getData().get(i).getY());
+							}
+							mitListe.setX(x);
+							mitListe.setY(y);
+							spectra.add(mitListe);
+							
+							
+							JavaRDD<SingleSpectrum> rdd2 = (sc).parallelize(spectra);
+							javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(SingleSpectrum.class)).saveToCassandra();							
+					        
+							
 							log.warn("-----------HALLLOOOOOOOOOO----------");
-
-
 							log.warn(t.toString());
+							
+							
+							
 						}
 					});
 				}

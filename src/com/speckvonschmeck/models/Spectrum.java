@@ -6,6 +6,7 @@ public class Spectrum {
 	Meta meta;
 	List<Data> data;
 	
+	
 	public Meta getMeta() {
 		return meta;
 	}
