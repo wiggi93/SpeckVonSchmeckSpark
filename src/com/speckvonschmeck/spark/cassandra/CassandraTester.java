@@ -10,7 +10,7 @@ import com.speckvonschmeck.spark.models.Spectrum;
 
 public class CassandraTester {
 	
-	public static List<SingleSpectrum> generateSingleSpectraFromSpectrum(Spectrum spectrum){
+	public static List<Spectrum> generateSpectraFromSpectrum(Spectrum spectrum){
 		Spectrum test = new Spectrum();
 		Data testdata1= new Data();
 		Data testdata2= new Data();

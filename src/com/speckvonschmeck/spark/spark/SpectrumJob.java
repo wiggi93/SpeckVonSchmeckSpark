@@ -29,7 +29,6 @@ import com.datastax.driver.core.Session;
 import com.datastax.spark.connector.cql.CassandraConnector;
 import com.google.gson.Gson;
 import com.speckvonschmeck.spark.cassandra.CassandraTester;
-import com.speckvonschmeck.spark.models.SingleSpectrum;
 import com.speckvonschmeck.spark.models.Spectrum;
 
 public class SpectrumJob {
@@ -108,10 +107,10 @@ public class SpectrumJob {
 						public void call(Spectrum spectrum) throws Exception {
 							// TODO Auto-generated method stub
 					        
-					        List<SingleSpectrum> spectra = CassandraTester.generateSingleSpectraFromSpectrum(spectrum);
+					        List<Spectrum> spectra = CassandraTester.generateSpectraFromSpectrum(spectrum);
 							
-							JavaRDD<SingleSpectrum> rdd2 = (sc).parallelize(spectra);
-							javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(SingleSpectrum.class)).saveToCassandra();							
+							JavaRDD<Spectrum> rdd2 = (sc).parallelize(spectra);
+							javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();							
 					        
 							
 							log.warn("-----------HALLLOOOOOOOOOO----------");
