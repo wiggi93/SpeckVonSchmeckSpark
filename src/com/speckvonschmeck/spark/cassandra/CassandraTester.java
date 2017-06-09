@@ -24,7 +24,7 @@ public class CassandraTester {
 		testdata2.setY(34);
 		liste.add(testdata1);
 		liste.add(testdata2);
-		testmeta.setCharge("slojgpos");
+		testmeta.setCharge("sloafsjgpos");
 		testmeta.setPepmass("osihgiosfh");
 		testmeta.setRtInSeconds("soihgoih");
 		testmeta.setScans("slighopsieg");
