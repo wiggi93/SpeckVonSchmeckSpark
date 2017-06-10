@@ -2,9 +2,13 @@ package com.speckvonschmeck.spark.models;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
+
+import com.datastax.driver.core.utils.UUIDs;
 
 public class Spectrum implements Serializable {
 	String title, scans, pepmass, charge, rtinseconds;
+	UUID uuid;
 	List<Double> x;
 	List<Double> y;
 	
@@ -23,6 +27,12 @@ public class Spectrum implements Serializable {
 	}
 	public String getPepmass() {
 		return pepmass;
+	}
+	public UUID getUuid() {
+		return uuid;
+	}
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
 	}
 	public void setPepmass(String pepmass) {
 		this.pepmass = pepmass;
@@ -55,7 +65,7 @@ public class Spectrum implements Serializable {
 	@Override
 	public String toString() {
 		return "Spectrum [title=" + title + ", scans=" + scans + ", pepmass=" + pepmass + ", charge=" + charge
-				+ ", rtinseconds=" + rtinseconds + ", x=" + x + ", y=" + y + "]";
+				+ ", rtinseconds=" + rtinseconds + ", uuid=" + uuid + ", x=" + x + ", y=" + y + "]";
 	}
 	
 }
