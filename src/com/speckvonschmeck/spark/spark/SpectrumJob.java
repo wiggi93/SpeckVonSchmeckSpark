@@ -4,6 +4,7 @@ import static com.datastax.spark.connector.japi.CassandraJavaUtil.javaFunctions;
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.mapRowTo;
 import static com.datastax.spark.connector.japi.CassandraJavaUtil.mapToRow;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import org.slf4j.impl.Log4jLoggerFactory;
 
 import com.datastax.spark.connector.cql.CassandraConnector;
 import com.datastax.spark.connector.japi.CassandraJavaUtil;
+import com.google.gson.Gson;
 import com.speckvonschmeck.spark.cassandra.CassandraTester;
 import com.speckvonschmeck.spark.models.Spectrum;
 
@@ -50,13 +52,14 @@ public class SpectrumJob {
 			System.getenv("KAFKA_TOPIC")
 			: "speckvonschmeck";
 			
+	public static JavaSparkContext sc;
 	public static void main(String[] args) throws Exception {
 
 		Logger log = new Log4jLoggerFactory().getLogger("");
 				
 		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[3]");
 		
-		JavaSparkContext sc = new JavaSparkContext(conf);
+		sc = new JavaSparkContext(conf);
 		JavaStreamingContext context = new JavaStreamingContext(sc, new Duration(2000));
 		 
 		
@@ -69,15 +72,15 @@ public class SpectrumJob {
 //        }
         
         
-        List<Spectrum> spectra = CassandraTester.generateSpectraFromSpectrum();
+ //       List<Spectrum> spectra = CassandraTester.generateSpectraFromSpectrum();
 		
 //		JavaRDD<Spectrum> rdd2 = (sc).parallelize(spectra);
 //		javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();	
         
-		JavaRDD<Spectrum> personRdd = CassandraJavaUtil.javaFunctions(sc)
-                .cassandraTable("alpha", "spectrum", mapRowTo(Spectrum.class));
-		javaFunctions(personRdd).writerBuilder("beta", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();	
-		
+//		JavaRDD<Spectrum> personRdd = CassandraJavaUtil.javaFunctions(sc)
+//                .cassandraTable("alpha", "spectrum", mapRowTo(Spectrum.class));
+//		javaFunctions(personRdd).writerBuilder("beta", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();	
+//		
          
         Map<String, Object> kafkaParams = new HashMap<>();
 		kafkaParams.put("bootstrap.servers", KAFKA_URL);
@@ -110,10 +113,17 @@ public class SpectrumJob {
 				      public void call(Iterator<ConsumerRecord<String, String>> consumerRecords) {
 				    	  OffsetRange o = offsetRanges[TaskContext.get().partitionId()];
 				    	  System.out.println(o.topic() + " " + o.partition() + " " + o.fromOffset() + " " + o.untilOffset());
+				    	  List<Spectrum> list = new ArrayList<Spectrum>();
 				    	  if(consumerRecords.hasNext()){
 				    		  ConsumerRecord<String, String> rec = consumerRecords.next();
+				    		  
+				    		  	list.add(new Gson().fromJson(rec.value(), Spectrum.class));
 					    	  System.out.println(rec.key());
 					    	  System.out.println(rec.value());
+				    	  }
+				    	  if (!list.isEmpty()){
+				    	  JavaRDD<Spectrum> rdd2 = sc.parallelize(list);
+				    	  javaFunctions(rdd2).writerBuilder("alpha", "spectrum", mapToRow(Spectrum.class)).saveToCassandra();	
 				    	  }
 				    	  
 				      }
