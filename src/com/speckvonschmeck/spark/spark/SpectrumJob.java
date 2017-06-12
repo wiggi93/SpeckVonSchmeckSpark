@@ -47,7 +47,7 @@ import scala.Tuple2;
 
 public class SpectrumJob {
 	
-	
+	public static boolean readyForNext = true;
 	public final static String KAFKA_URL = System.getenv("KAFKA_URL") != null ? 
 			System.getenv("KAFKA_URL")
 			: "192.168.178.64:9092";//64
@@ -65,7 +65,7 @@ public class SpectrumJob {
 		
 		Logger log = new Log4jLoggerFactory().getLogger("");
 				
-		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[20]");
+		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[5]");
 		
 		sc = new JavaSparkContext(conf);
 		JavaStreamingContext context = new JavaStreamingContext(sc, new Duration(2000));
@@ -107,8 +107,8 @@ public class SpectrumJob {
 				    	  System.out.println(o.topic() + " " + o.partition() + " " + o.fromOffset() + " " + o.untilOffset());
 				 
 				    	  while(consumerRecords.hasNext()){
-				    		  System.out.println("-------CONSUMERRECORD---------");
-				    		  cassi.saveSpec(consumerRecords.next());
+				    		  if(readyForNext)
+				    			  cassi.saveSpec(consumerRecords.next());
 				    	  }
 				      }
 				  });
