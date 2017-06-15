@@ -4,14 +4,13 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-import com.datastax.driver.core.utils.UUIDs;
-
 public class Spectrum implements Serializable {
+	private static final long serialVersionUID = 4889393619267306155L;
+	
 	String title, scans, pepmass, charge, rtinseconds;
 	UUID uuid;
 	List<Double> x;
 	List<Double> y;
-	
 	
 	public String getTitle() {
 		return title;

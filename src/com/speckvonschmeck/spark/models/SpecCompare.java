@@ -4,10 +4,13 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class SpecCompare implements Serializable{
+	private static final long serialVersionUID = -2178752071460666906L;
+	
 	UUID uuid, spectrum1id, spectrum2id;
 	double score;
 	String user;
 	long time;
+	
 	public UUID getUuid() {
 		return uuid;
 	}
@@ -25,11 +28,6 @@ public class SpecCompare implements Serializable{
 	}
 	public void setSpectrum2id(UUID spectrum2id) {
 		this.spectrum2id = spectrum2id;
-	}
-	@Override
-	public String toString() {
-		return "SpecCompare [uuid=" + uuid + ", spectrum1id=" + spectrum1id + ", spectrum2id=" + spectrum2id
-				+ ", score=" + score + ", user=" + user + ", time=" + time + "]";
 	}
 	public double getScore() {
 		return score;
@@ -49,4 +47,11 @@ public class SpecCompare implements Serializable{
 	public void setTime(long time) {
 		this.time = time;
 	}
+	
+	@Override
+	public String toString() {
+		return "SpecCompare [uuid=" + uuid + ", spectrum1id=" + spectrum1id + ", spectrum2id=" + spectrum2id
+				+ ", score=" + score + ", user=" + user + ", time=" + time + "]";
+	}
+	
 }
