@@ -3,7 +3,6 @@ package com.speckvonschmeck.spark.spark;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -33,7 +32,7 @@ import scala.Tuple2;
 public class SpectrumJob {
 	
 	public static boolean readyForNext = true;
-	public final static String KAFKA_URL = "192.168.178.64:9092";//64
+	public final static String KAFKA_URL = "localhost:9092";//64
 			
 	public final static String CASSANDRA_URL = "localhost";//64
 			
@@ -47,6 +46,7 @@ public class SpectrumJob {
 		SparkConf conf = new SparkConf().setAppName("speckvonschmeck").setMaster("local[5]");
 		
 		sparkContext = new JavaSparkContext(conf);
+		sparkContext.setLogLevel("ERROR");
 		JavaStreamingContext context = new JavaStreamingContext(sparkContext, new Duration(2000));
 		 
         CassandraConnector connector = CassandraConnector.apply(conf);
@@ -82,20 +82,15 @@ public class SpectrumJob {
 			@Override
 			  public void call(JavaRDD<ConsumerRecord<String, String>> rdd) {
 				  final OffsetRange[] offsetRanges = ((HasOffsetRanges) rdd.rdd()).offsetRanges();
-				  rdd.foreachPartition(new VoidFunction<Iterator<ConsumerRecord<String, String>>>() {
-					private static final long serialVersionUID = -4724561525660172057L;
+				  rdd.foreach(new VoidFunction<ConsumerRecord<String, String>>() {
+					  private static final long serialVersionUID = -4724561525660172057L;
 
-					@Override
-				      public void call(Iterator<ConsumerRecord<String, String>> consumerRecords) {
-				    	  OffsetRange o = offsetRanges[TaskContext.get().partitionId()];
-				    	  System.out.println(o.topic() + " " + o.partition() + " " + o.fromOffset() + " " + o.untilOffset());
-				 
-				    	  while(consumerRecords.hasNext()){
-				    		  if(readyForNext){
-				    			  cassi.saveSpec(consumerRecords.next());
-				    		  }
-				    	  }
-				      }
+					  @Override
+					  public void call(ConsumerRecord<String, String> consumerRecord) throws Exception {
+						  OffsetRange o = offsetRanges[TaskContext.get().partitionId()];
+						  System.out.println(o.topic() + " " + o.partition() + " " + o.fromOffset() + " " + o.untilOffset());
+						  cassi.saveSpec(consumerRecord);
+					  }
 				  });
 			  }
 		});

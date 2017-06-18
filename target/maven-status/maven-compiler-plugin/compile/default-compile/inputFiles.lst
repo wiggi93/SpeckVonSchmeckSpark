@@ -1,9 +1,5 @@
-C:\Users\Söri\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\cassandra\CassandraTester.java
-C:\Users\Söri\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\models\Meta.java
-C:\Users\Söri\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\models\Spectrum.java
-C:\Users\Söri\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\spark\SpectrumJob.java
-C:\Users\Söri\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\models\SingleSpectrum.java
-C:\Users\Söri\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\spark\backup.java
-C:\Users\Söri\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\models\Data.java
-C:\Users\Söri\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\spark\Test.java
-C:\Users\Söri\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\spark\SpectrumJob2.java
+C:\Users\Sorn\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\spark\ScoringFunctionHelper.java
+C:\Users\Sorn\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\spark\SpectrumJob.java
+C:\Users\Sorn\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\cassandra\CassandraConnection.java
+C:\Users\Sorn\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\models\Spectrum.java
+C:\Users\Sorn\git\SpeckVonSchmeckSpark\src\com\speckvonschmeck\spark\models\SpecCompare.java
