@@ -64,17 +64,18 @@ public class CassandraConnection implements Serializable{
 				System.out.println("CALL");
 				if (!spectrum1.getUuid().equals(spectrum2.getUuid())){
 					try{				
-					
 						specCompareList.add(ScoringFunctionHelper.compare(spectrum1, spectrum2));
 					}catch(Exception e){
 						e.printStackTrace();
 					}
 				}
-  			  	if (specCompareList.size() >= 50){
+  			  	if (specCompareList.size() >= count-1){
   			  		writeSpecCompareRow("alpha", "speccompare");
   			  	}
 			}
 		});
+		
+		writeSpecCompareRow("alpha", "speccompare");
 	}
 	
 	private JavaRDD<Spectrum> getTableAsRDD(String keyspace, String table){
