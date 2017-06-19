@@ -31,6 +31,7 @@ public class CassandraConnection implements Serializable{
 	private CassandraConnector connector;
 	private static List<Spectrum> specList =  new ArrayList<Spectrum>();
 	private static List<SpecCompare> specCompareList =  new ArrayList<SpecCompare>();
+	private static List<SpecCompare> bufferlist =  new ArrayList<SpecCompare>();
 	private static long count = 0;
 	
 	public CassandraConnection(JavaSparkContext sc, CassandraConnector connector){
@@ -48,8 +49,7 @@ public class CassandraConnection implements Serializable{
 	}
 	
 	public void saveSpec(ConsumerRecord<String, String> rec){
-		SpectrumJob.readyForNext = false;
-		specCompareList.clear();
+		System.out.println("SAVE SPEC");
 		Spectrum spectrum1 = new Gson().fromJson(rec.value(), Spectrum.class);
 		spectrum1.setUuid(UUIDs.timeBased());
 		specList.clear();
@@ -61,8 +61,16 @@ public class CassandraConnection implements Serializable{
 			private static final long serialVersionUID = -723624019513843295L;
 			@Override
 			public void call(Spectrum spectrum2) throws Exception {
-				specCompareList.add(ScoringFunctionHelper.compare(spectrum1, spectrum2));
-  			  	if (specCompareList.size() >= count){
+				System.out.println("CALL");
+				if (!spectrum1.getUuid().equals(spectrum2.getUuid())){
+					try{				
+					
+						specCompareList.add(ScoringFunctionHelper.compare(spectrum1, spectrum2));
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+  			  	if (specCompareList.size() >= 50){
   			  		writeSpecCompareRow("alpha", "speccompare");
   			  	}
 			}
@@ -70,20 +78,28 @@ public class CassandraConnection implements Serializable{
 	}
 	
 	private JavaRDD<Spectrum> getTableAsRDD(String keyspace, String table){
+		System.out.println("GET TABLE AS RDD");
 		return CassandraJavaUtil.javaFunctions(sparkContext)
 		.cassandraTable(keyspace, table, mapRowTo(Spectrum.class));
 	}
 	
 	private void writeSpecRow(String keyspace, String table){
+		System.out.println("WRITE SPEC ROW");
 		JavaRDD<Spectrum> rdd2 = sparkContext.parallelize(specList);
   		javaFunctions(rdd2).writerBuilder(keyspace, table, mapToRow(Spectrum.class)).saveToCassandra();	
 	}
 	
 	private void writeSpecCompareRow(String keyspace, String table){
+		
 		try{
-			JavaRDD<SpecCompare> scoreRDD = sparkContext.parallelize(specCompareList);
+			bufferlist.addAll(specCompareList);
+			specCompareList.clear();
+			System.out.println(bufferlist.size());
+			JavaRDD<SpecCompare> scoreRDD = sparkContext.parallelize(bufferlist);
 	  	  	javaFunctions(scoreRDD).writerBuilder(keyspace, table, mapToRow(SpecCompare.class)).saveToCassandra();
-	  	  	specCompareList.clear();
+	  	  	System.out.println("vor Clear");
+	  	  	
+	  	  	bufferlist.clear();
 		}catch(Exception e){
 			e.printStackTrace();
 		}

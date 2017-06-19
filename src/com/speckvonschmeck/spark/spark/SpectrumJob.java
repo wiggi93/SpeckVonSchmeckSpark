@@ -31,7 +31,6 @@ import scala.Tuple2;
 
 public class SpectrumJob {
 	
-	public static boolean readyForNext = true;
 	public final static String KAFKA_URL = "localhost:9092";//64
 			
 	public final static String CASSANDRA_URL = "localhost";//64
