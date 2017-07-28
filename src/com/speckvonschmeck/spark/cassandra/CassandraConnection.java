@@ -49,7 +49,6 @@ public class CassandraConnection implements Serializable{
 	}
 	
 	public void saveSpec(ConsumerRecord<String, String> rec){
-		System.out.println("SAVE SPEC");
 		Spectrum spectrum1 = new Gson().fromJson(rec.value(), Spectrum.class);
 		spectrum1.setUuid(UUIDs.timeBased());
 		specList.clear();
@@ -61,7 +60,6 @@ public class CassandraConnection implements Serializable{
 			private static final long serialVersionUID = -723624019513843295L;
 			@Override
 			public void call(Spectrum spectrum2) throws Exception {
-				System.out.println("CALL");
 				if (!spectrum1.getUuid().equals(spectrum2.getUuid())){
 					try{				
 						specCompareList.add(ScoringFunctionHelper.compare(spectrum1, spectrum2));
@@ -69,7 +67,7 @@ public class CassandraConnection implements Serializable{
 						e.printStackTrace();
 					}
 				}
-  			  	if (specCompareList.size() >= count-1){
+  			  	if ((specCompareList.size() >= count-1) || (specCompareList.size() >= 500)){
   			  		writeSpecCompareRow("alpha", "speccompare");
   			  	}
 			}
@@ -79,13 +77,11 @@ public class CassandraConnection implements Serializable{
 	}
 	
 	private JavaRDD<Spectrum> getTableAsRDD(String keyspace, String table){
-		System.out.println("GET TABLE AS RDD");
 		return CassandraJavaUtil.javaFunctions(sparkContext)
 		.cassandraTable(keyspace, table, mapRowTo(Spectrum.class));
 	}
 	
 	private void writeSpecRow(String keyspace, String table){
-		System.out.println("WRITE SPEC ROW");
 		JavaRDD<Spectrum> rdd2 = sparkContext.parallelize(specList);
   		javaFunctions(rdd2).writerBuilder(keyspace, table, mapToRow(Spectrum.class)).saveToCassandra();	
 	}
@@ -95,14 +91,14 @@ public class CassandraConnection implements Serializable{
 		try{
 			bufferlist.addAll(specCompareList);
 			specCompareList.clear();
-			System.out.println(bufferlist.size());
 			JavaRDD<SpecCompare> scoreRDD = sparkContext.parallelize(bufferlist);
 	  	  	javaFunctions(scoreRDD).writerBuilder(keyspace, table, mapToRow(SpecCompare.class)).saveToCassandra();
-	  	  	System.out.println("vor Clear");
 	  	  	
 	  	  	bufferlist.clear();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		SpectrumJob.timeEnd=System.currentTimeMillis();
+		System.out.println(SpectrumJob.timeEnd-SpectrumJob.timeStart);
 	}
 }

@@ -31,6 +31,9 @@ import scala.Tuple2;
 
 public class SpectrumJob {
 	
+	public static boolean first = true;
+	public static long timeStart, timeEnd;
+	
 	public final static String KAFKA_URL = "localhost:9092";//64
 			
 	public final static String CASSANDRA_URL = "localhost";//64
@@ -86,8 +89,11 @@ public class SpectrumJob {
 
 					  @Override
 					  public void call(ConsumerRecord<String, String> consumerRecord) throws Exception {
+						  if (first==true)
+							  timeStart=System.currentTimeMillis();
+						  first=false;
 						  OffsetRange o = offsetRanges[TaskContext.get().partitionId()];
-						  System.out.println(o.topic() + " " + o.partition() + " " + o.fromOffset() + " " + o.untilOffset());
+//						  System.out.println(o.topic() + " " + o.partition() + " " + o.fromOffset() + " " + o.untilOffset());
 						  cassi.saveSpec(consumerRecord);
 					  }
 				  });
