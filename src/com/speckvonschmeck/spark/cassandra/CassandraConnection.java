@@ -29,9 +29,9 @@ public class CassandraConnection implements Serializable{
 	
 	private static JavaSparkContext sparkContext;
 	private CassandraConnector connector;
-	private static List<Spectrum> specList =  new ArrayList<Spectrum>();
-	private static List<SpecCompare> specCompareList =  new ArrayList<SpecCompare>();
-	private static List<SpecCompare> bufferlist =  new ArrayList<SpecCompare>();
+	private static List<Spectrum> specList = new ArrayList<Spectrum>();
+	private static List<SpecCompare> specCompareList = new ArrayList<SpecCompare>();
+	private static List<SpecCompare> bufferlist = new ArrayList<SpecCompare>();
 	private static long count = 0;
 	
 	public CassandraConnection(JavaSparkContext sc, CassandraConnector connector){
@@ -39,16 +39,26 @@ public class CassandraConnection implements Serializable{
 		this.connector = connector;
 	}
 	
+	/**
+	* This method drops all cassandra tables if they exist and recreates them
+	*/
 	public void createDB(){
       try (Session session = connector.openSession()) {
           session.execute("DROP KEYSPACE IF EXISTS ALPHA");
           session.execute("CREATE KEYSPACE ALPHA WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
           session.execute("CREATE TABLE ALPHA.SPECTRUM (uuid TIMEUUID PRIMARY KEY, title TEXT, scans TEXT, pepmass TEXT, charge TEXT, rtinseconds TEXT, x LIST<DOUBLE>, y LIST<DOUBLE>)");
           session.execute("CREATE TABLE ALPHA.SPECCOMPARE (uuid TIMEUUID PRIMARY KEY, spectrum1id TIMEUUID, spectrum2id TIMEUUID, score1 DOUBLE, score2 DOUBLE, score3 DOUBLE, user TEXT, time BIGINT)");
+      }catch(Exception e){
+    	  e.printStackTrace();
       }
 	}
 	
-	public void saveSpec(ConsumerRecord<String, String> rec){
+	/**
+	* This method takes a spectrum from kafka and compares it with every other spectrum that is already stored.
+	* Then the result and given spectrum will be stored as well.
+	* @param rec - spectrum as Map<String, String> from kafka
+	*/
+	public void computeCassandraOperations(ConsumerRecord<String, String> rec){
 		Spectrum spectrum1 = new Gson().fromJson(rec.value(), Spectrum.class);
 		spectrum1.setUuid(UUIDs.timeBased());
 		specList.clear();
@@ -76,18 +86,36 @@ public class CassandraConnection implements Serializable{
 		writeSpecCompareRow("alpha", "speccompare");
 	}
 	
+	/**
+	* This method returns all objects inside the given table as a RDD object.
+	* @param keyspace - keyspace to save to 
+	* @param table - table to save to
+	* 
+	* @return table content as RDD
+	*/
 	private JavaRDD<Spectrum> getTableAsRDD(String keyspace, String table){
 		return CassandraJavaUtil.javaFunctions(sparkContext)
 		.cassandraTable(keyspace, table, mapRowTo(Spectrum.class));
 	}
 	
+	/**
+	* This method writes the spectrum object in the given table
+	* @param keyspace - keyspace to save to 
+	* @param table - table to save to
+	*/
 	private void writeSpecRow(String keyspace, String table){
 		JavaRDD<Spectrum> rdd2 = sparkContext.parallelize(specList);
   		javaFunctions(rdd2).writerBuilder(keyspace, table, mapToRow(Spectrum.class)).saveToCassandra();	
 	}
 	
+	/**
+	* This method writes the spectrumCompare object in the given table. Therefore it puts the specCompare objects inside 
+	* a bufferList everytime the method is called and tries to write them to cassandra. If it succeeds, the bufferlist 
+	* is being cleared.
+	* @param keyspace - keyspace to save to 
+	* @param table - table to save to
+	*/
 	private void writeSpecCompareRow(String keyspace, String table){
-		
 		try{
 			bufferlist.addAll(specCompareList);
 			specCompareList.clear();

@@ -41,6 +41,13 @@ public class SpectrumJob {
 	public final static String KAFKA_TOPIC = "speckvonschmeck";
 			
 	public static JavaSparkContext sparkContext;
+	
+	/**
+	* This is the entry point of the application.
+	* - consumes kafka stream
+	* - 
+	* 
+	*/
 	public static void main(String[] args) throws Exception {
 
 		Logger log = new Log4jLoggerFactory().getLogger("");
@@ -93,19 +100,16 @@ public class SpectrumJob {
 							  timeStart=System.currentTimeMillis();
 						  first=false;
 						  OffsetRange o = offsetRanges[TaskContext.get().partitionId()];
-//						  System.out.println(o.topic() + " " + o.partition() + " " + o.fromOffset() + " " + o.untilOffset());
-						  cassi.saveSpec(consumerRecord);
+						  cassi.computeCassandraOperations(consumerRecord);
 					  }
 				  });
 			  }
 		});
 		
-		
 		context.start();
 		try {
 			context.awaitTermination();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	}	
