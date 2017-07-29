@@ -32,7 +32,6 @@ public class CassandraConnection implements Serializable{
 	private static List<Spectrum> specList = new ArrayList<Spectrum>();
 	private static List<SpecCompare> specCompareList = new ArrayList<SpecCompare>();
 	private static List<SpecCompare> bufferlist = new ArrayList<SpecCompare>();
-	private static long count = 0;
 	
 	public CassandraConnection(JavaSparkContext sc, CassandraConnector connector){
 		sparkContext = sc;
@@ -65,7 +64,6 @@ public class CassandraConnection implements Serializable{
 		specList.add(spectrum1);
 		writeSpecRow("alpha", "spectrum");
 		JavaRDD<Spectrum> specRDD = getTableAsRDD("alpha", "spectrum");
-		count = specRDD.count();
 		specRDD.foreach(new VoidFunction<Spectrum>() {
 			private static final long serialVersionUID = -723624019513843295L;
 			@Override
@@ -77,7 +75,7 @@ public class CassandraConnection implements Serializable{
 						e.printStackTrace();
 					}
 				}
-  			  	if ((specCompareList.size() >= count-1) || (specCompareList.size() >= 500)){
+  			  	if (specCompareList.size() >= 500){
   			  		writeSpecCompareRow("alpha", "speccompare");
   			  	}
 			}

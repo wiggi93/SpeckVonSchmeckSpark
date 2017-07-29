@@ -44,8 +44,10 @@ public class SpectrumJob {
 	
 	/**
 	* This is the entry point of the application.
-	* - consumes kafka stream
-	* - 
+	* - creates cassandra connection
+	* - connects to kafka
+	* - consumes stream and builds rdds
+	* - calls cassandra operations on each rdd
 	* 
 	*/
 	public static void main(String[] args) throws Exception {
@@ -59,8 +61,8 @@ public class SpectrumJob {
 		JavaStreamingContext context = new JavaStreamingContext(sparkContext, new Duration(2000));
 		 
         CassandraConnector connector = CassandraConnector.apply(conf);
-        CassandraConnection cassi = new CassandraConnection(sparkContext, connector);
-        cassi.createDB();     
+        CassandraConnection cassandraConnection = new CassandraConnection(sparkContext, connector);
+        cassandraConnection.createDB();     
         
         Map<String, Object> kafkaParams = new HashMap<>();
 		kafkaParams.put("bootstrap.servers", KAFKA_URL);
@@ -100,7 +102,7 @@ public class SpectrumJob {
 							  timeStart=System.currentTimeMillis();
 						  first=false;
 						  OffsetRange o = offsetRanges[TaskContext.get().partitionId()];
-						  cassi.computeCassandraOperations(consumerRecord);
+						  cassandraConnection.computeCassandraOperations(consumerRecord);
 					  }
 				  });
 			  }

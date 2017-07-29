@@ -88,12 +88,17 @@ public class ScoringFunctionHelper {
             specBSum[i] = (double) 0;
         }
        
-        for(int i = 0; i < specA.getX().size(); i++){
-            specASum[(int) (specA.getX().get(i)/stepSize)] += specA.getY().get(i);
+        try{
+	    	for(int i = 0; i < specA.getX().size(); i++){
+	            specASum[(int) (specA.getX().get(i)/stepSize)] += specA.getY().get(i);
+	        }
+	        for(int i = 0; i < specB.getX().size(); i++){
+	            specBSum[(int) (specB.getX().get(i)/stepSize)] += specB.getY().get(i);
+	        }
+        }catch(Exception e){
+        	e.printStackTrace();
         }
-        for(int i = 0; i < specB.getX().size(); i++){
-            specBSum[(int) (specB.getX().get(i)/stepSize)] += specB.getY().get(i);
-        }
+        
         return calculateDotProductDerived(specASum, specBSum, specAMinValue, (double) 1, (double) 1, true);
 	}
 	
